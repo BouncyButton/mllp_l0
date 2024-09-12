@@ -1,0 +1,22 @@
+The adaptation of L0 regularization for MLLP can be reviewed in models_l0.py script.
+
+The procedure for adapting the L0 Regularization to the MLLP architecture was the following:
+
+- Copy attributes and functions from l0_layers.L0Dense in the L0_regularization repo to MLLP Conjunction and Disjunction Layers classes.
+- Copy attributes and functions from models.L0MLP in the L0 regularization repo to MLLP class.
+- Remove all Random Binarization processes from all MLLP modules.
+- Modify Conjunction and Disjunction layers forward function to include the input modification and weight sampling performed by the L0Dense layer.
+- Modify MLLP train function to include a loss function that considers the L0 regularization, and other functions from train_lenet5 in the L0_regularization repo.
+
+Main concerns / assumptions:
+
+- In the L0 Regularization paper, the following line states that "(...) One price we pay is that now
+the gradient of the log-likelihood w.r.t. the parameters φ of q(s) is sparse due to the rectifications;
+nevertheless this should not pose an issue considering the prevalence of rectified linear units in neural
+netwo". In their implementation, specifically the L0MLP, they use ReLU activation functions. In the MLLP case, the activation function is the AND and OR functions. Therefore, I am not sure if there is any mathematical implication that will affect the performance in this case.
+- answer (Luca): that's a valid concern. We could empirically verify how gradients behave. It could also be beneficial to our case having this kind of sparsified gradients, as the people from FBK suggested.
+
+- The weights are initialized as in the MLLP repo, with a small value between 0 and 0.1, avoiding the L0 Reg repo Kaiming initialization, which includes negative values. Furthermore, the weights are clipped between 0 and 1 for each optimization step. The AND and OR activation functions from the Conjunction and Disjunction layers require the weights to be between 0 and 1. I am not sure if this could affect any mathematical implication of the L0 Regularization.
+- answer (Luca): that's another good point. I should verify the mathematical details.
+- The weights are initialized as in the MLLP repo, with a small value between 0 and 0.1, avoiding the L0 Reg repo Kaiming initialization, which includes negative values. Furthermore, the weights are clipped between 0 and 1 for each optimization step. The AND and OR activation functions from the Conjunction and Disjunction layers require the weights to be between 0 and 1. I am not sure if this could affect any mathematical implication of the L0 Regularization. Take into consideration ReLU also makes everything negative into 0.
+

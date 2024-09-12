@@ -1,0 +1,8 @@
+matplotlib==3.8.2
+numpy==1.26.4
+pandas==2.2.0
+scikit-learn==1.4.0
+wandb==0.17.4
+ray==2.32.0
+ray[train]
+ray[tune]
